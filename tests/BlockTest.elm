@@ -16,8 +16,9 @@ suite =
                 let
                     blockName = "Paragraph"
                     emptyBlock =
-                        Block.Named blockName
-                            [ ("indent", (Block.Attr 4 []))
+                        Block.named
+                            blockName
+                            [ ("indent", 4, Block.SubAttrs [])
                             ]
                             []
                 in
