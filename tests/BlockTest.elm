@@ -1,6 +1,10 @@
 module BlockTest exposing (suite)
 
 import HDML.Block as Block
+import HDML.Block.Name as BlockName
+import HDML.Block.Attrs as BlockAttrs exposing
+    ( AttrValue(..)
+    )
 
 import Dict exposing (Dict)
 import Expect exposing (Expectation)
@@ -14,17 +18,15 @@ suite =
         [test "create empty block" <|
             \_ ->
                 let
-                    blockName = "Paragraph"
-                    emptyBlock =
+                    blockName = BlockName.Paragraph
+                    block =
                         Block.named
                             blockName
-                            [ ("indent", 4, Block.SubAttrs [])
+                            [ BlockAttrs.Attr "indent" (WithInt 4) []
                             ]
                             []
                 in
-                case emptyBlock of
-                    Block.Named name _ _ ->
-                        Expect.equal blockName name
-                    _ ->
-                        Expect.fail "No block matched"
+                -- Expect.equal block (Block.text [] "")
+                Block.nameOf block
+                |> Expect.equal (BlockName.from "Paragraph")
         ]
