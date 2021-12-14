@@ -2,7 +2,7 @@ module BlockTest exposing (suite)
 
 import HDML.Block as Block
 import HDML.Block.Name as Name
-import HDML.Block.Attrs as Attrs
+import HDML.Block.Attr as Attr
 
 import Dict exposing (Dict)
 import Expect exposing (Expectation)
@@ -30,14 +30,14 @@ suite =
                 let
                     lang = "zh_CN"
                     attrs =
-                        Attrs.fromList
-                            [ Attrs.from "lang" (Attrs.String lang) []
+                        Attr.fromList
+                            [ Attr.from "lang" (Attr.String lang) []
                             ]
                 in
-                    case (Attrs.get ["lang"] attrs) of
-                        Just (Attrs.Attr name value) ->
+                    case (Attr.get ["lang"] attrs) of
+                        Just (Attr.Attr name value) ->
                             case value of
-                                Attrs.String v ->
+                                Attr.String v ->
                                     Expect.equal lang v
                                 _ ->
                                     Expect.fail ("No value found for " ++ name)
@@ -48,14 +48,14 @@ suite =
                 let
                     authorName = "张三"
                     attrs =
-                        Attrs.fromList
-                            [ Attrs.from "author" (Attrs.None)
-                                [ Attrs.from "name" (Attrs.String authorName) []
+                        Attr.fromList
+                            [ Attr.from "author" (Attr.None)
+                                [ Attr.from "name" (Attr.String authorName) []
                                 ]
                             ]
                 in
-                    case (Attrs.val ["author", "name"] attrs) of
-                        Attrs.String v ->
+                    case (Attr.val ["author", "name"] attrs) of
+                        Attr.String v ->
                             Expect.equal authorName v
                         _ ->
                             Expect.fail ("No value found for @author.name")

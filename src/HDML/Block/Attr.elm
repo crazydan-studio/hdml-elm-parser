@@ -1,4 +1,4 @@
-module HDML.Block.Attrs exposing
+module HDML.Block.Attr exposing
     ( Attr(..)
     , AttrValue(..)
     , AttrList
