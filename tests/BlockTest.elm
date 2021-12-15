@@ -10,6 +10,7 @@ import Fuzz exposing (Fuzzer)
 import Test exposing (Test, describe, fuzz, test)
 
 
+-- https://package.elm-lang.org/packages/elm-explorations/test/latest/Expect
 suite : Test
 suite =
     describe "HDML.Block"

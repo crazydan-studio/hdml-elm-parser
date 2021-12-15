@@ -3,11 +3,13 @@ module HDML.Block.Attr exposing
     , AttrValue(..)
     , AttrList
     , AttrNested(..)
+    , AttrTree
     , BlockAttr
     , from
     , get
     , val
     , fromList
+    , toList
     , forBlock
     , declaredOf
     , reservedOf
@@ -100,18 +102,18 @@ forBlock declared reserved =
     }
 
 
-declaredOf : BlockAttr a -> AttrList a
+declaredOf : BlockAttr a -> AttrTree a
 declaredOf attr =
     case attr of
         { declared, reserved } ->
-            toList declared
+            declared
 
 
-reservedOf : BlockAttr a -> AttrList a
+reservedOf : BlockAttr a -> AttrTree a
 reservedOf attr =
     case attr of
         { declared, reserved } ->
-            toList reserved
+            reserved
 
 
 get : List String -> AttrTree a -> Maybe (Attr a)

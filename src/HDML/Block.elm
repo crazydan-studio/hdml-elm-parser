@@ -4,8 +4,8 @@ module HDML.Block exposing
     , text
     , nameOf
     , blocksOf
-    , declaredAttrsOf
-    , reservedAttrsOf
+    , declaredAttrOf
+    , reservedAttrOf
     )
 
 import HDML.Block.Name as Name
@@ -65,11 +65,11 @@ attrOf block =
             attr
 
 
-declaredAttrsOf : Block a -> Attr.AttrList a
-declaredAttrsOf block =
+declaredAttrOf : Block a -> Attr.AttrTree a
+declaredAttrOf block =
     Attr.declaredOf (attrOf block)
 
 
-reservedAttrsOf : Block a -> Attr.AttrList a
-reservedAttrsOf block =
+reservedAttrOf : Block a -> Attr.AttrTree a
+reservedAttrOf block =
     Attr.reservedOf (attrOf block)
