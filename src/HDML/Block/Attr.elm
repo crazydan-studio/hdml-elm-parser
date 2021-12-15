@@ -1,20 +1,17 @@
 module HDML.Block.Attr exposing
-    ( Attr(..), AttrNested(..), AttrValue(..)
+    ( Attr(..), AttrNested(..)
     , from, get, set
-    , AttrList, AttrTree, AttrTreeNode(..)
+    , AttrList
     , fromList, toList
     , BlockAttr, forBlock, declaredOf, reservedOf
     )
 
+import HDML.Block.Attr.Internal as Internal exposing
+    ( AttrTree, AttrTreeNode(..)
+    , AttrValue(..)
+    )
+
 import Dict exposing (Dict)
-
-
-type AttrValue =
-    Integer Int
-    | Float Float
-    | Bool Bool
-    | String String
-    | None
 
 
 {-| 属性
@@ -27,14 +24,6 @@ type AttrNested a =
 
 type alias AttrList a =
     List (AttrNested a)
-
-
--- 属性的内部结构
-type AttrTreeNode a =
-    AttrTreeNode AttrValue (AttrTree a)
-
-type alias AttrTree a =
-    Dict String (AttrTreeNode a)
 
 
 {-| 块属性
@@ -115,18 +104,14 @@ get paths topTree =
         [] ->
             Nothing
         name :: subPaths ->
-            let
-                topTreeNode =
-                    Dict.get name topTree
-            in
-                case topTreeNode of
-                    Nothing ->
-                        Nothing
-                    Just (AttrTreeNode value subTree) ->
-                        if List.isEmpty subPaths then
-                            Just (Attr name value)
-                        else
-                            get subPaths subTree
+            case (Dict.get name topTree) of
+                Nothing ->
+                    Nothing
+                Just (AttrTreeNode nodeValue subTree) ->
+                    if List.isEmpty subPaths then
+                        Just (Attr name nodeValue)
+                    else
+                        get subPaths subTree
 
 
 {-| 添加或覆盖指定的属性

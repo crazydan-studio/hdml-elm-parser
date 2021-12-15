@@ -9,32 +9,38 @@ module HDML.Block exposing
     )
 
 import HDML.Block.Name as Name
-import HDML.Block.Attr as Attr
+import HDML.Block.Attr as Attr exposing
+    ( AttrList, BlockAttr
+    , forBlock, declaredOf, reservedOf
+    )
+import HDML.Block.Attr.Internal as Internal exposing
+    ( AttrTree
+    )
 
 import Dict exposing (Dict)
 
 
 -- 块结构
 type Block a =
-    Named Name.Name (Attr.BlockAttr a) (Blocks a)
-    | Text (Attr.BlockAttr a) String
+    Named Name.Name (BlockAttr a) (Blocks a)
+    | Text (BlockAttr a) String
 
 type alias Blocks a =
     List (Block a)
 
 
-named : Name.Name -> Attr.AttrList a -> Blocks a -> Block a
+named : Name.Name -> AttrList a -> Blocks a -> Block a
 named name attrs blocks =
     Named
         name
-        (Attr.forBlock attrs [])
+        (forBlock attrs [])
         blocks
 
 
-text : Attr.AttrList a -> String -> Block a
+text : AttrList a -> String -> Block a
 text attrs content =
     Text
-        (Attr.forBlock attrs [])
+        (forBlock attrs [])
         content
 
 
@@ -56,7 +62,7 @@ blocksOf block =
             []
 
 
-attrOf : Block a -> Attr.BlockAttr a
+attrOf : Block a -> BlockAttr a
 attrOf block =
     case block of
         Named _ attr _ ->
@@ -65,11 +71,11 @@ attrOf block =
             attr
 
 
-declaredAttrOf : Block a -> Attr.AttrTree a
+declaredAttrOf : Block a -> AttrTree a
 declaredAttrOf block =
-    Attr.declaredOf (attrOf block)
+    declaredOf (attrOf block)
 
 
-reservedAttrOf : Block a -> Attr.AttrTree a
+reservedAttrOf : Block a -> AttrTree a
 reservedAttrOf block =
-    Attr.reservedOf (attrOf block)
+    reservedOf (attrOf block)

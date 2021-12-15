@@ -19,16 +19,12 @@ suite =
                     lang = "zh_CN"
                     attrs =
                         Attr.fromList
-                            [ Attr.from "lang" (Attr.String lang) []
+                            [ Attr.from "lang" (AttrValue.asString lang) []
                             ]
                 in
                     case (Attr.get ["lang"] attrs) of
                         Just (Attr.Attr name value) ->
-                            case value of
-                                Attr.String v ->
-                                    Expect.equal lang v
-                                _ ->
-                                    Expect.fail ("No value found for " ++ name)
+                            Expect.equal (AttrValue.asString lang) value
                         Nothing ->
                             Expect.fail "No attribute found"
 
@@ -39,24 +35,19 @@ suite =
                     authorEmail = "zhangsan@example.com"
                     attrs =
                         Attr.fromList
-                            [ Attr.from "author" (Attr.None)
-                                [ Attr.from "name" (Attr.String authorName) []
-                                , Attr.from "email" (Attr.String authorEmail) []
+                            [ Attr.from "author" (AttrValue.asNone)
+                                [ Attr.from "name" (AttrValue.asString authorName) []
+                                , Attr.from "email" (AttrValue.asString authorEmail) []
                                 ]
                             ]
                 in
-                    [case (AttrValue.get ["author", "name"] attrs) of
-                        Attr.String v ->
-                            v
-                        _ ->
-                            ""
-                    , case (AttrValue.get ["author", "email"] attrs) of
-                        Attr.String v ->
-                            v
-                        _ ->
-                            ""
+                    [ AttrValue.get ["author", "name"] attrs
+                    , AttrValue.get ["author", "email"] attrs
                     ]
-                    |> Expect.equalLists [ authorName, authorEmail ]
+                    |> Expect.equalLists
+                        [ AttrValue.asString authorName
+                        , AttrValue.asString authorEmail
+                        ]
 
         , test "create block attribute" <|
             \_ ->
@@ -65,23 +56,18 @@ suite =
                     raw = "@author " ++ authorName
                     blockAttr =
                         Attr.forBlock
-                            [ Attr.from "author" (Attr.String authorName) []
+                            [ Attr.from "author" (AttrValue.asString authorName) []
                             ]
-                            [ Attr.from "raw" (Attr.String raw) []
+                            [ Attr.from "raw" (AttrValue.asString raw) []
                             ]
                 in
-                    [case (AttrValue.get ["author"] (Attr.declaredOf blockAttr)) of
-                        Attr.String v ->
-                            v
-                        _ ->
-                            ""
-                    , case (AttrValue.get ["raw"] (Attr.reservedOf blockAttr)) of
-                        Attr.String v ->
-                            v
-                        _ ->
-                            ""
+                    [ AttrValue.get ["author"] (Attr.declaredOf blockAttr)
+                    , AttrValue.get ["raw"] (Attr.reservedOf blockAttr)
                     ]
-                    |> Expect.equalLists [ authorName, raw ]
+                    |> Expect.equalLists
+                        [ AttrValue.asString authorName
+                        , AttrValue.asString raw
+                        ]
 
         , test "set or update attribute value" <|
             \_ ->
@@ -91,35 +77,24 @@ suite =
                     authorEmail = "lisi@example.com"
                     attrs =
                         Attr.fromList
-                            [ Attr.from "author" (Attr.None)
-                                [ Attr.from "name" (Attr.String authorName) []
+                            [ Attr.from "author" (AttrValue.asNone)
+                                [ Attr.from "name" (AttrValue.asString authorName) []
                                 ]
                             ]
                     updatedAttrs =
                         attrs
-                        |> AttrValue.set (Attr.String newAuthorName) ["author", "name"]
-                        |> AttrValue.set (Attr.String authorEmail) ["author", "email"]
+                        |> AttrValue.set (AttrValue.asString newAuthorName) ["author", "name"]
+                        |> AttrValue.set (AttrValue.asString authorEmail) ["author", "email"]
                 in
-                    [ case (AttrValue.get ["author", "name"] attrs) of
-                        Attr.String v ->
-                            v
-                        _ ->
-                            ""
-                    , case (AttrValue.get ["author", "email"] attrs) of
-                        Attr.None ->
-                            "none"
-                        _ ->
-                            ""
-                    , case (AttrValue.get ["author", "name"] updatedAttrs) of
-                        Attr.String v ->
-                            v
-                        _ ->
-                            ""
-                    , case (AttrValue.get ["author", "email"] updatedAttrs) of
-                        Attr.String v ->
-                            v
-                        _ ->
-                            ""
+                    [ AttrValue.get ["author", "name"] attrs
+                    , AttrValue.get ["author", "email"] attrs
+                    , AttrValue.get ["author", "name"] updatedAttrs
+                    , AttrValue.get ["author", "email"] updatedAttrs
                     ]
-                    |> Expect.equalLists [ authorName, "none", newAuthorName, authorEmail ]
+                    |> Expect.equalLists
+                        [ AttrValue.asString authorName
+                        , AttrValue.asNone
+                        , AttrValue.asString newAuthorName
+                        , AttrValue.asString authorEmail
+                        ]
         ]
