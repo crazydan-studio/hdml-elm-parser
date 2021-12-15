@@ -1,6 +1,7 @@
 module BlockAttrTest exposing (suite)
 
 import HDML.Block.Attr as Attr
+import HDML.Block.Attr.Value as AttrValue
 
 import Dict exposing (Dict)
 import Expect exposing (Expectation)
@@ -44,12 +45,12 @@ suite =
                                 ]
                             ]
                 in
-                    [case (Attr.val ["author", "name"] attrs) of
+                    [case (AttrValue.get ["author", "name"] attrs) of
                         Attr.String v ->
                             v
                         _ ->
                             ""
-                    , case (Attr.val ["author", "email"] attrs) of
+                    , case (AttrValue.get ["author", "email"] attrs) of
                         Attr.String v ->
                             v
                         _ ->
@@ -69,12 +70,12 @@ suite =
                             [ Attr.from "raw" (Attr.String raw) []
                             ]
                 in
-                    [case (Attr.val ["author"] (Attr.declaredOf blockAttr)) of
+                    [case (AttrValue.get ["author"] (Attr.declaredOf blockAttr)) of
                         Attr.String v ->
                             v
                         _ ->
                             ""
-                    , case (Attr.val ["raw"] (Attr.reservedOf blockAttr)) of
+                    , case (AttrValue.get ["raw"] (Attr.reservedOf blockAttr)) of
                         Attr.String v ->
                             v
                         _ ->

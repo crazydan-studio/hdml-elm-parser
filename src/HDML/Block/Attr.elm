@@ -1,18 +1,9 @@
 module HDML.Block.Attr exposing
-    ( Attr(..)
-    , AttrValue(..)
-    , AttrList
-    , AttrNested(..)
-    , AttrTree
-    , BlockAttr
-    , from
-    , get
-    , val
-    , fromList
-    , toList
-    , forBlock
-    , declaredOf
-    , reservedOf
+    ( Attr(..), AttrNested(..), AttrValue(..)
+    , from, get, set
+    , AttrList, AttrTree
+    , fromList, toList
+    , BlockAttr, forBlock, declaredOf, reservedOf
     )
 
 import Dict exposing (Dict)
@@ -116,6 +107,8 @@ reservedOf attr =
             reserved
 
 
+{-| 获取指定的属性
+-}
 get : List String -> AttrTree a -> Maybe (Attr a)
 get paths topTree =
     case paths of
@@ -136,16 +129,11 @@ get paths topTree =
                             get subPaths subTree
 
 
-val : List String -> AttrTree a -> AttrValue
-val paths topTree =
-    case (get paths topTree) of
-        Nothing ->
-            None
-        Just (Attr name value) ->
-            value
+{-| 添加或覆盖指定的属性
+-}
+set : List String -> Attr a -> AttrTree a -> AttrTree a
+set paths attr topTree =
+    topTree
 
 
--- add =
-
-
--- sub =
+-- travel =
