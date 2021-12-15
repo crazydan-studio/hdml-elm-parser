@@ -4,6 +4,8 @@ module HDML.Block.Attr.Value exposing
 
 import HDML.Block.Attr as Attr
 
+import Dict exposing (Dict)
+
 
 {-| 获取指定属性的值
 -}
@@ -18,6 +20,30 @@ get paths topTree =
 
 {-| 设置指定属性的值
 -}
-set : List String -> Attr.AttrValue -> Attr.AttrTree a -> Attr.AttrTree a
-set paths value topTree =
-    topTree
+set : Attr.AttrValue -> List String -> Attr.AttrTree a -> Attr.AttrTree a
+set value paths topTree =
+    case paths of
+        [] ->
+            topTree
+        name :: subPaths ->
+            let
+                topTreeNode =
+                    Dict.get name topTree
+            in
+                case topTreeNode of
+                    Nothing ->
+                        if List.isEmpty subPaths then
+                            Dict.insert name (Attr.AttrTreeNode value Dict.empty) topTree
+                        else
+                            let
+                                subTree = set value subPaths Dict.empty
+                            in
+                                Dict.insert name (Attr.AttrTreeNode Attr.None subTree) topTree
+                    Just (Attr.AttrTreeNode nodeValue subTree) ->
+                        if List.isEmpty subPaths then
+                            Dict.insert name (Attr.AttrTreeNode value subTree) topTree
+                        else
+                            let
+                                newSubTree = set value subPaths subTree
+                            in
+                                Dict.insert name (Attr.AttrTreeNode nodeValue newSubTree) topTree

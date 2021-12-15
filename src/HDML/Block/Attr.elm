@@ -1,7 +1,7 @@
 module HDML.Block.Attr exposing
     ( Attr(..), AttrNested(..), AttrValue(..)
     , from, get, set
-    , AttrList, AttrTree
+    , AttrList, AttrTree, AttrTreeNode(..)
     , fromList, toList
     , BlockAttr, forBlock, declaredOf, reservedOf
     )
@@ -116,10 +116,10 @@ get paths topTree =
             Nothing
         name :: subPaths ->
             let
-                attrs =
+                topTreeNode =
                     Dict.get name topTree
             in
-                case attrs of
+                case topTreeNode of
                     Nothing ->
                         Nothing
                     Just (AttrTreeNode value subTree) ->
@@ -131,8 +131,8 @@ get paths topTree =
 
 {-| 添加或覆盖指定的属性
 -}
-set : List String -> Attr a -> AttrTree a -> AttrTree a
-set paths attr topTree =
+set : Attr a -> List String -> AttrTree a -> AttrTree a
+set attr paths topTree =
     topTree
 
 

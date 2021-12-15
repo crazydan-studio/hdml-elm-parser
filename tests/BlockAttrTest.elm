@@ -82,4 +82,44 @@ suite =
                             ""
                     ]
                     |> Expect.equalLists [ authorName, raw ]
+
+        , test "set or update attribute value" <|
+            \_ ->
+                let
+                    authorName = "张三"
+                    newAuthorName = "李四"
+                    authorEmail = "lisi@example.com"
+                    attrs =
+                        Attr.fromList
+                            [ Attr.from "author" (Attr.None)
+                                [ Attr.from "name" (Attr.String authorName) []
+                                ]
+                            ]
+                    updatedAttrs =
+                        attrs
+                        |> AttrValue.set (Attr.String newAuthorName) ["author", "name"]
+                        |> AttrValue.set (Attr.String authorEmail) ["author", "email"]
+                in
+                    [ case (AttrValue.get ["author", "name"] attrs) of
+                        Attr.String v ->
+                            v
+                        _ ->
+                            ""
+                    , case (AttrValue.get ["author", "email"] attrs) of
+                        Attr.None ->
+                            "none"
+                        _ ->
+                            ""
+                    , case (AttrValue.get ["author", "name"] updatedAttrs) of
+                        Attr.String v ->
+                            v
+                        _ ->
+                            ""
+                    , case (AttrValue.get ["author", "email"] updatedAttrs) of
+                        Attr.String v ->
+                            v
+                        _ ->
+                            ""
+                    ]
+                    |> Expect.equalLists [ authorName, "none", newAuthorName, authorEmail ]
         ]
