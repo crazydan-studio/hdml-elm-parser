@@ -49,28 +49,63 @@ get paths topTree =
 -}
 set : AttrValue -> List String -> AttrTree a -> AttrTree a
 set value paths topTree =
-    case paths of
+    setForwardHelper value paths [] topTree []
+
+-- 以尾递归方式为属性赋值，支持创建不存在的节点
+setForwardHelper : AttrValue -> List String -> List String
+                    -> AttrTree a -> List (AttrTreeNode a)
+                    -> AttrTree a
+setForwardHelper value forwardPaths backwardPaths topTree treeNodes =
+    case forwardPaths of
+        -- 沿路径向前到达树的底端，不存在的节点，则主动创建
+        name :: subForwardPaths ->
+            let
+                topTreeValue =
+                    if (List.isEmpty subForwardPaths) then
+                        value
+                    else
+                        get [name] topTree
+                subTree =
+                    case (Dict.get name topTree) of
+                        Nothing ->
+                            Dict.empty
+                        Just (AttrTreeNode _ tree) ->
+                            tree
+
+                newTreeNodes =
+                    (AttrTreeNode topTreeValue topTree) :: treeNodes
+            in
+                setForwardHelper
+                    value
+                    subForwardPaths
+                    (name :: backwardPaths)
+                    subTree newTreeNodes
+
+        -- 到达树的底端，依次为经过的节点重新赋值，直到后退至树的根节点
+        [] ->
+            setBackwardHelper backwardPaths topTree treeNodes
+
+setBackwardHelper : List String -> AttrTree a -> List (AttrTreeNode a)
+                    -> AttrTree a
+setBackwardHelper backwardPaths topTree treeNodes =
+    case backwardPaths of
         [] ->
             topTree
-        name :: subPaths ->
-            let
-                topTreeNode =
-                    Dict.get name topTree
-            in
-                case topTreeNode of
-                    Nothing ->
-                        if List.isEmpty subPaths then
-                            Dict.insert name (AttrTreeNode value Dict.empty) topTree
-                        else
-                            let
-                                subTree = set value subPaths Dict.empty
-                            in
-                                Dict.insert name (AttrTreeNode None subTree) topTree
-                    Just (AttrTreeNode nodeValue subTree) ->
-                        if List.isEmpty subPaths then
-                            Dict.insert name (AttrTreeNode value subTree) topTree
-                        else
-                            let
-                                newSubTree = set value subPaths subTree
-                            in
-                                Dict.insert name (AttrTreeNode nodeValue newSubTree) topTree
+        name :: subBackwardPaths ->
+            case treeNodes of
+                [] ->
+                    topTree
+                treeNode :: leftTreeNodes ->
+                    let
+                        newTopTree =
+                            case treeNode of
+                                (AttrTreeNode topTreeValue upTopTree) ->
+                                    Dict.insert
+                                        name
+                                        (AttrTreeNode topTreeValue topTree)
+                                        upTopTree
+                    in
+                        setBackwardHelper
+                            subBackwardPaths
+                            newTopTree
+                            leftTreeNodes

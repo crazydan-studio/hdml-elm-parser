@@ -119,6 +119,3 @@ get paths topTree =
 set : Attr a -> List String -> AttrTree a -> AttrTree a
 set attr paths topTree =
     topTree
-
-
--- travel =

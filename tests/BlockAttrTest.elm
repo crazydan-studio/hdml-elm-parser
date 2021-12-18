@@ -75,6 +75,8 @@ suite =
                     authorName = "张三"
                     newAuthorName = "李四"
                     authorEmail = "lisi@example.com"
+                    authorValue = newAuthorName ++ " <" ++ authorEmail ++ ">"
+                    fontSize = "14px"
                     attrs =
                         Attr.fromList
                             [ Attr.from "author" (AttrValue.asNone)
@@ -83,18 +85,30 @@ suite =
                             ]
                     updatedAttrs =
                         attrs
+                        |> AttrValue.set (AttrValue.asString authorValue) ["author"]
                         |> AttrValue.set (AttrValue.asString newAuthorName) ["author", "name"]
                         |> AttrValue.set (AttrValue.asString authorEmail) ["author", "email"]
+                        |> AttrValue.set (AttrValue.asString fontSize) ["style", "font", "size"]
                 in
-                    [ AttrValue.get ["author", "name"] attrs
+                    [ AttrValue.get ["author"] attrs
+                    , AttrValue.get ["author", "name"] attrs
                     , AttrValue.get ["author", "email"] attrs
+                    , AttrValue.get ["author"] updatedAttrs
                     , AttrValue.get ["author", "name"] updatedAttrs
                     , AttrValue.get ["author", "email"] updatedAttrs
+                    , AttrValue.get ["style"] updatedAttrs
+                    , AttrValue.get ["style", "font"] updatedAttrs
+                    , AttrValue.get ["style", "font", "size"] updatedAttrs
                     ]
                     |> Expect.equalLists
-                        [ AttrValue.asString authorName
+                        [ AttrValue.asNone
+                        , AttrValue.asString authorName
                         , AttrValue.asNone
+                        , AttrValue.asString authorValue
                         , AttrValue.asString newAuthorName
                         , AttrValue.asString authorEmail
+                        , AttrValue.asNone
+                        , AttrValue.asNone
+                        , AttrValue.asString fontSize
                         ]
         ]
