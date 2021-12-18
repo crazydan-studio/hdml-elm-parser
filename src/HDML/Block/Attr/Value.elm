@@ -3,7 +3,6 @@ module HDML.Block.Attr.Value exposing
     , asInt, asFloat, asBool, asString, asNone
     )
 
-import HDML.Block.Attr as Attr
 import HDML.Block.Attr.Internal as Internal exposing
     ( AttrTree, AttrTreeNode(..)
     , AttrValue(..)
@@ -38,11 +37,18 @@ asNone =
 -}
 get : List String -> AttrTree a -> AttrValue
 get paths topTree =
-    case (Attr.get paths topTree) of
-        Nothing ->
+    case paths of
+        [] ->
             None
-        Just (Attr.Attr name value) ->
-            value
+        name :: subPaths ->
+            case (Dict.get name topTree) of
+                Nothing ->
+                    None
+                Just (AttrTreeNode nodeValue subTree) ->
+                    if List.isEmpty subPaths then
+                        nodeValue
+                    else
+                        get subPaths subTree
 
 
 {-| 设置指定属性的值

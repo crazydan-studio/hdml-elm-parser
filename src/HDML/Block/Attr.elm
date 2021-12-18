@@ -6,6 +6,7 @@ module HDML.Block.Attr exposing
     , BlockAttr, forBlock, declaredOf, reservedOf
     )
 
+import HDML.Block.Attr.Value as AttrVal
 import HDML.Block.Attr.Internal as Internal exposing
     ( AttrTree, AttrTreeNode(..)
     , AttrValue(..)
@@ -118,4 +119,6 @@ get paths topTree =
 -}
 set : Attr a -> List String -> AttrTree a -> AttrTree a
 set attr paths topTree =
-    topTree
+    case attr of
+        (Attr name nodeValue) ->
+            AttrVal.set nodeValue (paths ++ [name]) topTree

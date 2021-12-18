@@ -69,6 +69,47 @@ suite =
                         , AttrValue.asString raw
                         ]
 
+        , test "set or update attribute" <|
+            \_ ->
+                let
+                    authorName = "张三"
+                    authorNameAttr = Attr.Attr "name" (AttrValue.asString authorName)
+                    authorEmail = "zhangsan@example.com"
+                    authorEmailAttr = Attr.Attr "email" (AttrValue.asString authorEmail)
+                    fontSize = "14px"
+                    fontSizeAttr = Attr.Attr "size" (AttrValue.asString fontSize)
+                    attrs =
+                        Attr.fromList
+                            [ Attr.from "author" (AttrValue.asNone) []
+                            ]
+                    updatedAttrs =
+                        attrs
+                        |> Attr.set authorNameAttr ["author"]
+                        |> Attr.set authorEmailAttr ["author"]
+                        |> Attr.set fontSizeAttr ["style", "font"]
+                in
+                    [ AttrValue.get ["author"] attrs
+                    , AttrValue.get ["author", "name"] attrs
+                    , AttrValue.get ["author", "email"] attrs
+                    , AttrValue.get ["author"] updatedAttrs
+                    , AttrValue.get ["author", "name"] updatedAttrs
+                    , AttrValue.get ["author", "email"] updatedAttrs
+                    , AttrValue.get ["style"] updatedAttrs
+                    , AttrValue.get ["style", "font"] updatedAttrs
+                    , AttrValue.get ["style", "font", "size"] updatedAttrs
+                    ]
+                    |> Expect.equalLists
+                        [ AttrValue.asNone
+                        , AttrValue.asNone
+                        , AttrValue.asNone
+                        , AttrValue.asNone
+                        , AttrValue.asString authorName
+                        , AttrValue.asString authorEmail
+                        , AttrValue.asNone
+                        , AttrValue.asNone
+                        , AttrValue.asString fontSize
+                        ]
+
         , test "set or update attribute value" <|
             \_ ->
                 let
