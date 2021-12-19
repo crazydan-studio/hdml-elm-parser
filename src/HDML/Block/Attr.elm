@@ -4,6 +4,7 @@ module HDML.Block.Attr exposing
     , AttrList
     , fromList, toList
     , BlockAttr, forBlock, declaredOf, reservedOf
+    , addDeclared, addReserved
     )
 
 import HDML.Block.Attr.Value as AttrVal
@@ -95,6 +96,20 @@ reservedOf attr =
     case attr of
         { declared, reserved } ->
             reserved
+
+
+addDeclared : Attr a -> List String -> BlockAttr a -> BlockAttr a
+addDeclared attr paths blockAttr =
+    case blockAttr of
+        { declared, reserved } ->
+            {blockAttr | declared = (set attr paths declared)}
+
+
+addReserved : Attr a -> List String -> BlockAttr a -> BlockAttr a
+addReserved attr paths blockAttr =
+    case blockAttr of
+        { declared, reserved } ->
+            {blockAttr | reserved = (set attr paths reserved)}
 
 
 {-| 获取指定的属性
